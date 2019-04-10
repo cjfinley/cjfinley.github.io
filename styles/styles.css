@@ -1,0 +1,51 @@
+body {
+  text-align: center;
+  background-color: #f0ebc5;
+}
+
+.button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 45px 96px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.button0 {
+  background-color: grey;
+}
+
+.button0:hover {
+  background-color: lightgrey;
+}
+
+.button1 {
+  background-color: blue;
+}
+.button1:hover {
+  background-color: lightblue;
+}
+.button2 {
+  background-color: green;
+}
+.button2:hover {
+  background-color: lightgreen;
+}
+.button3 {
+  background-color: grey;
+}
+.button3:hover {
+  background-color: lightgrey;
+}

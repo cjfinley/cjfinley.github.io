@@ -1,9 +1,23 @@
+<!DOCTYPE html>
 <html>
-  <header>
-    <title>This is title</title>
-  </header>
-
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.6/Tone.min.js"></script>
+    <link rel="stylesheet" href="styles/styles.css" />
+    <script async src="./javascript/index.js"></script>
+    <title>My webpage!</title>
+  </head>
   <body>
-    Hello world
+    <h1>Hello, World!</h1>
+    <h4 id="date"></h4>
+    <div><button class="button button0" onclick="pause()">Pause</button></div>
+    <button class="button button1" onclick="play()">Play</button>
+    <div>
+      <button class="button button2" onclick="increaseFrequency()">
+        Increase
+      </button>
+      <button class="button button3" onclick="decreaseFrequency()">
+        Decrease
+      </button>
+    </div>
   </body>
 </html>
