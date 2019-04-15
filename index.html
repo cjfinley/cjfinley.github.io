@@ -12,18 +12,18 @@
     <div><button class="button button0" onclick="pause()">Pause</button></div>
     <button class="button button1" onclick="play()">Play</button>
     <div class="slidecontainer">
-      <p>Speed slider:</p>
+      <p>Octave slider:</p>
       <input
         type="range"
         min="1"
-        max="16"
-        value="4"
+        max="6"
+        value="1"
         class="slider"
-        id="tempo"
+        id="octaveSlider"
       />
     </div>
-    <span id="tempoValue">4</span>th Note<br />
-    <button class="button button2" id="rhythm" onclick="rhythm()">
+    <span id="octaveValue">1</span>th Octave<br />
+    <button class="button button2" id="rhythm" onclick="toggleRhythm()">
       Toggle Rhythm
     </button>
   </body>
