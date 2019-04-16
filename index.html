@@ -7,24 +7,145 @@
     <title>My webpage!</title>
   </head>
   <body>
-    <h1>Hello, World!</h1>
-    <h4 id="date"></h4>
-    <div><button class="button button0" onclick="pause()">Pause</button></div>
-    <button class="button button1" onclick="play()">Play</button>
+    <h1>Hello Chords!</h1>
+    <div>
+      <button class="button button0" onclick="pause()">Pause</button>
+      <button class="button button1" onclick="play()">Play</button>
+      <button class="button button2" onclick="mute()">Mute</button>
+    </div>
+    <br />
+    <br />
     <div class="slidecontainer">
-      <p>Octave slider:</p>
+      <label class="container"
+        >Make Funky
+        <input type="checkbox" id="makeFunky" onclick="makeFunky()" />
+        <span class="checkmark"></span>
+      </label>
+      Volume:
+      <span id="volumeValue"></span>
       <input
         type="range"
-        min="1"
-        max="6"
-        value="1"
+        min="-20"
+        max="20"
+        value="0"
         class="slider"
-        id="octaveSlider"
+        name="volumeSlider"
+        id="volumeSlider"
       />
     </div>
-    <span id="octaveValue">1</span>th Octave<br />
-    <button class="button button2" id="rhythm" onclick="toggleRhythm()">
-      Toggle Rhythm
-    </button>
+    <br />
+    <br />
+    <hr size="10" width="90%" align="center" color="black" />
+    <br />
+    <br/ >
+    <div>
+      <div>
+        <div class="slidecontainer">
+          <label class="container">
+            Toggle Temperature
+            <input
+              type="checkbox"
+              checked="checked"
+              id="muteTemp"
+              onclick="toggleTemp()"
+            />
+            <span class="checkmark"></span>
+          </label>
+          Temperature Volume:
+          <span id="tempVolumeValue"></span>
+          <input
+            type="range"
+            min="-20"
+            max="20"
+            value="0"
+            class="slider"
+            name="tempVolumeSlider"
+            id="tempVolumeSlider"
+          />
+        </div>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div class="slidecontainer">
+          <label class="container">
+            Toggle Light
+            <input
+              type="checkbox"
+              checked="checked"
+              id="muteLight"
+              onclick="toggleLight()"
+            />
+            <span class="checkmark"></span>
+          </label>
+          Light Volume:
+          <span id="lightVolumeValue"></span>
+          <input
+            type="range"
+            min="-20"
+            max="20"
+            value="0"
+            class="slider"
+            name="lightVolumeSlider"
+            id="lightVolumeSlider"
+          />
+        </div>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <div class="slidecontainer">
+          <label class="container">
+            Toggle Humidity
+            <input
+              type="checkbox"
+              checked="checked"
+              id="muteHumidity"
+              onclick="toggleHumidity()"
+            />
+            <span class="checkmark"></span>
+          </label>
+          Humidity Volume:
+          <span id="humidityVolumeValue"></span>
+          <input
+            type="range"
+            min="-20"
+            max="20"
+            value="0"
+            class="slider"
+            name="humidityVolumeSlider"
+            id="humidityVolumeSlider"
+          />
+        </div>
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <label class="container"
+          >Toggle Motion
+          <input
+            type="checkbox"
+            checked="checked"
+            id="muteMotion"
+            onclick="toggleMotion()"
+          />
+          <span class="checkmark"></span>
+        </label>
+        Motion Volume
+        <span id="humidityVolumeValue"></span>
+        <input
+          type="range"
+          min="-20"
+          max="20"
+          value="0"
+          class="slider"
+          name="motionVolumeSlider"
+          id="motionVolumeSlider"
+        />
+      </div>
+    </div>
   </body>
 </html>
