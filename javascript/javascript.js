@@ -164,27 +164,9 @@ function setup() {
   }).toMaster();
 
   // Sets up motion synthesizers
-  motionSynthX = new Tone.PolySynth(4, Tone.Synth, {
-    volume: -8,
-    oscillator: {
-      partials: [1, 2, 5]
-    },
-    portamento: 0.005
-  }).toMaster();
-  motionSynthY = new Tone.PolySynth(4, Tone.Synth, {
-    volume: -8,
-    oscillator: {
-      partials: [1, 2, 5]
-    },
-    portamento: 0.005
-  }).toMaster();
-  motionSynthZ = new Tone.PolySynth(4, Tone.Synth, {
-    volume: -8,
-    oscillator: {
-      partials: [1, 2, 5]
-    },
-    portamento: 0.005
-  }).toMaster();
+  motionSynthX = new Tone.Synth().toMaster();
+  motionSynthY = new Tone.Synth().toMaster();
+  motionSynthZ = new Tone.Synth().toMaster();
 
   // Sets up temp synth
   tempSynth = new Tone.PolySynth(6);
@@ -245,7 +227,6 @@ function makeFunky() {
 }
 
 function makeFunkyhumidityLoopKickFunction(time) {
-  console.log(isMuted);
   if (makeFunkyVal && !isMuted) {
     val = Math.random();
     val *= 4;
@@ -422,7 +403,6 @@ function setRandomHumidityLoopSnarePattern() {
   val = Math.random();
   val *= 4;
   val = Math.floor(val);
-  console.log(val);
   if (val == 0) {
     setHumidityLoopValues(humidityLoopSnareNotes1);
   } else if (val == 1) {
