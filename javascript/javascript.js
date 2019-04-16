@@ -2,7 +2,9 @@
 const tempVal = 0.5;
 const humidityVal = 0.5;
 const lightVal = 0.5;
-const movementVal = 0.5;
+const motionX = 0.5;
+const motionY = 0.5;
+const motionZ = 0.5;
 
 var loopLocation = 0;
 
@@ -24,9 +26,11 @@ var motionVolumeOutput = document.getElementById("motionVolumeValue");
 
 // Some declarations of variables
 // This is the synth used currently, we'll add more here for each input
-let humiditySynth;
+let humiditySynthKickKick;
+// This should be the snare
+let humiditySynthSnare;
 // This is the loop used for the undertone white noise
-let humidityLoop;
+let humidityLoopKick;
 
 // bass synth
 let lightSynth;
@@ -40,6 +44,14 @@ var tempLoop;
 
 // Loop to keep track of which measure it is on
 var timeLoop;
+
+// Synth for the motion
+let motionSynthX;
+var motionLoopX;
+let motionSynthY;
+var motionLoopY;
+let motionSynthZ;
+var motionLoopZ;
 
 // Loop for making things funky
 let makeFunkyLoop;
@@ -97,39 +109,102 @@ lightLoopNotes = [
   ["b" + 1, "c" + 2]
 ];
 
-var aChord = ["a3", "c4", "e4"];
-var fChord = ["a3", "c4", "f4"];
-var cChord = ["c4", "e4", "g4"];
-var gChord = ["g3", "b3", "d4"];
-// These are tone.js part objects for each chord initialized in the setup function
-var aChordPart;
-var fChordPart;
-var cChordPart;
-var gChordPart;
+const aChord = ["a3", "c4", "e4"];
+const fChord = ["a3", "c4", "f4"];
+const cChord = ["g3", "c4", "e4"];
+const gChord = ["g3", "b3", "d4"];
+
+const aArpegio = ["a3", "c4", "e4", "a4"];
+const fArpegio = ["f3", "a3", "c4", "f4"];
+const cArpegio = ["c4", "e4", "g4", "c5"];
+const gArpegio = ["g3", "b3", "d4", "g4"];
+const aArpegioReverse = ["a4", "e4", "c4", "a3"];
+const fArpegioReverse = ["f4", "c4", "a3", "f3"];
+const cArpegioReverse = ["c5", "g4", "e4", "c4"];
+const gArpegioReverse = ["g4", "d4", "b3", "g3"];
+
+const humidityLoopSnareNotes1 = [
+  [["c4"], ["c4", "c4"]], // first measure
+  [["c4"], ["c4", "c4"]],
+  [["c4"], ["c4"]],
+  [["c4"], ["c4"]]
+];
+const humidityLoopSnareNotes2 = [
+  [["c4", "c4"], ["c4", "c4"]], // second measure
+  [["c4"], ["c4"]],
+  [["c4"], ["c4", "c4"]],
+  [["c4", "c4"], ["c4"]]
+];
+const humidityLoopSnareNotes3 = [
+  [["c4", "c4"], ["c4"]], // third measure
+  [["c4", "c4"], ["c4"]],
+  [["c4"], ["c4", "c4"]],
+  [["c4"], ["c4", "c4"]]
+];
+const humidityLoopSnareNotes4 = [
+  [["c4", "c4"], ["c4", "c4"]], // fourth measure
+  [["c4", "c4"], ["c4"]],
+  [null, [null, "c4"]],
+  [[["c4", "c4"], ["c4", "c4"]], [["c4", "c4"]], ["c4"]]
+];
+
+var humidityLoopSnareNotes = humidityLoopSnareNotes1;
 
 // Setupt
 function setup() {
-  // Setup synth
-  humiditySynth = new Tone.MembraneSynth().toMaster();
+  // Setup humidity synth
+  humiditySynthKick = new Tone.MembraneSynth().toMaster();
+  humiditySynthSnare = new Tone.NoiseSynth().toMaster();
+  humiditySynthSnare.volume.value = -15;
 
-  lightSynth = new Tone.Synth().toMaster();
+  // Sets up light synthesizer
+  lightSynth = piano;
 
+  // Sets up motion synthesizers
+  motionSynthX = piano;
+  motionSynthY = piano;
+  motionSynthZ = piano;
+
+  // Sets up temp synth
   tempSynth = new Tone.PolySynth(6);
   tempSynth.volume.value = -10;
   tempSynth.toMaster();
 
+  // Sets up a sequence for the light sound, as it plays a series of notes
   lightLoop = new Tone.Sequence(
     lightLoopFunction,
     lightLoopNotes,
     "8n"
   ).start();
-  humidityLoop = new Tone.Loop(song, "4n").start();
-  tempLoop = new Tone.Loop(tempLoopFunction, "1n").start();
-  makeFunkyLoop = new Tone.Loop(makeFunkySong, "8n").start();
 
+  motionLoopX = new Tone.Sequence(motionLoopXFunction, aArpegio, "4n").start();
+  motionLoopY = new Tone.Sequence(motionLoopYFunction, cArpegio, "1n").start();
+  motionLoopZ = new Tone.Sequence(motionLoopZFunction, gArpegio, "1n").start();
+
+  // Sets up several loops and a sequence. The loop simply plays the kick every half note (hence the 2n)
+  // And the sequence plays a randomly selected measure of snare (selected from humidityLoopSnareNotes1-4)
+  humidityLoopKick = new Tone.Loop(humidityLoopKickFunction, "2n").start();
+  humidityLoopSnare = new Tone.Sequence(
+    humidityLoopSnareFunction,
+    humidityLoopSnareNotes,
+    "4n"
+  ).start();
+
+  // Sets up a loop for playing the the tempSynth (polySynth simply playing 4 chords);
+  tempLoop = new Tone.Loop(tempLoopFunction, "1n").start();
+
+  // A loop that randomizes the values played by the lightLoop
+  makeFunkyLoop = new Tone.Loop(
+    makeFunkyhumidityLoopKickFunction,
+    "8n"
+  ).start();
+
+  // A loop that simply counts from iteratesa global constant from 0 - 3 so we can know what measure we're on.
+  // It is 0 - 3 because the song is in 4/4 time
   timeLoop = new Tone.Loop(timeLoopFunction, "1n").start();
 
-  setlightLoopOctave(1);
+  // Sets the start ocatave for the light notes
+  setlightLoopOctave(2);
 }
 
 function makeFunky() {
@@ -143,7 +218,7 @@ function makeFunky() {
   }
 }
 
-function makeFunkySong(time) {
+function makeFunkyhumidityLoopKickFunction(time) {
   if (makeFunkyVal) {
     val = Math.random();
     val *= 5;
@@ -196,6 +271,13 @@ function setlightLoopOctave(octave) {
   lightLoop.at(31, ["b" + (1 + newValue), "c" + (2 + newValue)]);
 }
 
+function setHumidityLoopValues(measure) {
+  humidityLoopSnare.at(0, measure[0]);
+  humidityLoopSnare.at(1, measure[1]);
+  humidityLoopSnare.at(2, measure[2]);
+  humidityLoopSnare.at(3, measure[3]);
+}
+
 volumeSlider.oninput = function() {
   volumeOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
@@ -217,12 +299,14 @@ lightVolumeSlider.oninput = function() {
 humidityVolumeSlider.oninput = function() {
   humidityVolumeOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
-  humiditySynth.volume.value = this.value;
+  humiditySynthKick.volume.value = this.value;
+  humiditySynthSnare.volume.value = this.value - 15;
 };
 
-// This determines the humidityLoop
-function song(time) {
-  humiditySynth.triggerAttackRelease("c1", "8n", time);
+// This determines the humidityLoopKick
+function humidityLoopKickFunction(time) {
+  setRandomHumidityLoopSnarePattern();
+  humiditySynthKick.triggerAttackRelease("c1", "8n", time);
 }
 
 function tempLoopFunction(time) {
@@ -242,10 +326,41 @@ function lightLoopFunction(time, note) {
   lightSynth.triggerAttackRelease(note, "10hz", time);
 }
 
+function motionLoopXFunction(time, note) {
+  motionSynthX.triggerAttackRelease(note, "10hz", time);
+}
+
+function motionLoopYFunction(time, note) {
+  motionSynthY.triggerAttackRelease(note, "10hz", time);
+}
+
+function motionLoopZFunction(time, note) {
+  motionSynthZ.triggerAttackRelease(note, "10hz", time);
+}
+
 function timeLoopFunction(time) {
   loopLocation += 1;
   loopLocation = loopLocation % 4;
-  console.log(loopLocation);
+}
+
+function humidityLoopSnareFunction(time, note) {
+  humiditySynthSnare.triggerAttackRelease("8n", time);
+}
+
+function setRandomHumidityLoopSnarePattern() {
+  val = Math.random();
+  val *= 4;
+  val = Math.floor(val);
+  console.log(val);
+  if (val == 0) {
+    setHumidityLoopValues(humidityLoopSnareNotes1);
+  } else if (val == 1) {
+    setHumidityLoopValues(humidityLoopSnareNotes2);
+  } else if ((val = 2)) {
+    setHumidityLoopValues(humidityLoopSnareNotes3);
+  } else if ((val = 3)) {
+    setHumidityLoopValues(humidityLoopSnareNotes4);
+  }
 }
 
 // This stops all the audio output
@@ -288,11 +403,19 @@ function toggleLight() {
   }
 }
 
-function toggleHumidity() {
-  if (humidityLoop.mute) {
-    humidityLoop.mute = false;
+function toggleHumidityKick() {
+  if (humidityLoopKick.mute) {
+    humidityLoopKick.mute = false;
   } else {
-    humidityLoop.mute = true;
+    humidityLoopKick.mute = true;
+  }
+}
+
+function toggleHumiditySnare() {
+  if (humidityLoopSnare.mute) {
+    humidityLoopSnare.mute = false;
+  } else {
+    humidityLoopSnare.mute = true;
   }
 }
 
