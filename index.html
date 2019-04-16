@@ -135,25 +135,69 @@
       <br />
       <div>
         <label class="container"
-          >Toggle Motion
+          >Toggle Motion-X
           <input
             type="checkbox"
             checked="checked"
-            id="muteMotion"
-            onclick="toggleMotion()"
+            id="muteMotionX"
+            onclick="toggleMotionX()"
           />
           <span class="checkmark"></span>
         </label>
-        Motion Volume
-        <span id="humidityVolumeValue"></span>
+        Motion-X Volume
+        <span id="motionXVolumeValue"></span>
         <input
           type="range"
-          min="-20"
-          max="20"
+          min="-1"
+          max="1"
           value="0"
           class="slider"
-          name="motionVolumeSlider"
-          id="motionVolumeSlider"
+          name="motionXVolumeSlider"
+          id="motionXVolumeSlider"
+        />
+        <br />
+        <label class="container"
+          >Toggle Motion-Y
+          <input
+            type="checkbox"
+            checked="checked"
+            id="muteMotionY"
+            onclick="toggleMotionY()"
+          />
+          <span class="checkmark"></span>
+        </label>
+        Motion-Y Volume
+        <span id="motionYVolumeValue"></span>
+        <input
+          type="range"
+          min="-1"
+          max="1"
+          value="0"
+          class="slider"
+          name="motionYVolumeSlider"
+          id="motionYVolumeSlider"
+        />
+        <br />
+        <label class="container"
+          >Toggle Motion-Z
+          <input
+            type="checkbox"
+            checked="checked"
+            id="muteMotionZ"
+            onclick="toggleMotionZ()"
+          />
+          <span class="checkmark"></span>
+        </label>
+        Motion-Z Volume
+        <span id="motionZVolumeValue"></span>
+        <input
+          type="range"
+          min="-1"
+          max="1"
+          value="0"
+          class="slider"
+          name="motionZVolumeSlider"
+          id="motionZVolumeSlider"
         />
       </div>
     </div>

@@ -21,8 +21,12 @@ var lightVolumeOutput = document.getElementById("lightVolumeValue");
 var humidityVolumeSlider = document.getElementById("humidityVolumeSlider");
 var humidityVolumeOutput = document.getElementById("humidityVolumeValue");
 // References the Motion Volume value
-var motionVolumeSlider = document.getElementById("motionVolumeSlider");
-var motionVolumeOutput = document.getElementById("motionVolumeValue");
+var motionXVolumeSlider = document.getElementById("motionXVolumeSlider");
+var motionXVolumeOutput = document.getElementById("motionXVolumeValue");
+var motionYVolumeSlider = document.getElementById("motionYVolumeSlider");
+var motionYVolumeOutput = document.getElementById("motionYVolumeValue");
+var motionZVolumeSlider = document.getElementById("motionZVolumeSlider");
+var motionZVolumeOutput = document.getElementById("motionZVolumeValue");
 
 // Some declarations of variables
 // This is the synth used currently, we'll add more here for each input
@@ -60,15 +64,6 @@ var makeFunkyVal = false;
 
 // A boolean variable used to tell us when to run the setup function so it is only run once
 var hasStarted = false;
-
-//	PIANO
-var piano = new Tone.PolySynth(4, Tone.Synth, {
-  volume: -8,
-  oscillator: {
-    partials: [1, 2, 5]
-  },
-  portamento: 0.005
-}).toMaster();
 
 lightLoopNotes = [
   // A minor chord
@@ -114,14 +109,14 @@ const fChord = ["a3", "c4", "f4"];
 const cChord = ["g3", "c4", "e4"];
 const gChord = ["g3", "b3", "d4"];
 
-const aArpegio = ["a3", "c4", "e4", "a4"];
-const fArpegio = ["f3", "a3", "c4", "f4"];
-const cArpegio = ["c4", "e4", "g4", "c5"];
-const gArpegio = ["g3", "b3", "d4", "g4"];
-const aArpegioReverse = ["a4", "e4", "c4", "a3"];
-const fArpegioReverse = ["f4", "c4", "a3", "f3"];
-const cArpegioReverse = ["c5", "g4", "e4", "c4"];
-const gArpegioReverse = ["g4", "d4", "b3", "g3"];
+const aArpegio = ["a4", "c5", "e5", "a5"];
+const fArpegio = ["f4", "a4", "c5", "f5"];
+const cArpegio = ["c5", "e5", "g5", "c6"];
+const gArpegio = ["g4", "b4", "d5", "g5"];
+const aArpegioReverse = ["a5", "e5", "c5", "a4"];
+const fArpegioReverse = ["f5", "c5", "a4", "f4"];
+const cArpegioReverse = ["c6", "g5", "e5", "c5"];
+const gArpegioReverse = ["g5", "d5", "b4", "g4"];
 
 const humidityLoopSnareNotes1 = [
   [["c4"], ["c4", "c4"]], // first measure
@@ -150,6 +145,8 @@ const humidityLoopSnareNotes4 = [
 
 var humidityLoopSnareNotes = humidityLoopSnareNotes1;
 
+var isMuted = false;
+
 // Setupt
 function setup() {
   // Setup humidity synth
@@ -158,12 +155,36 @@ function setup() {
   humiditySynthSnare.volume.value = -15;
 
   // Sets up light synthesizer
-  lightSynth = piano;
+  lightSynth = new Tone.PolySynth(4, Tone.Synth, {
+    volume: -8,
+    oscillator: {
+      partials: [1, 2, 5]
+    },
+    portamento: 0.005
+  }).toMaster();
 
   // Sets up motion synthesizers
-  motionSynthX = piano;
-  motionSynthY = piano;
-  motionSynthZ = piano;
+  motionSynthX = new Tone.PolySynth(4, Tone.Synth, {
+    volume: -8,
+    oscillator: {
+      partials: [1, 2, 5]
+    },
+    portamento: 0.005
+  }).toMaster();
+  motionSynthY = new Tone.PolySynth(4, Tone.Synth, {
+    volume: -8,
+    oscillator: {
+      partials: [1, 2, 5]
+    },
+    portamento: 0.005
+  }).toMaster();
+  motionSynthZ = new Tone.PolySynth(4, Tone.Synth, {
+    volume: -8,
+    oscillator: {
+      partials: [1, 2, 5]
+    },
+    portamento: 0.005
+  }).toMaster();
 
   // Sets up temp synth
   tempSynth = new Tone.PolySynth(6);
@@ -177,9 +198,12 @@ function setup() {
     "8n"
   ).start();
 
-  motionLoopX = new Tone.Sequence(motionLoopXFunction, aArpegio, "4n").start();
-  motionLoopY = new Tone.Sequence(motionLoopYFunction, cArpegio, "1n").start();
-  motionLoopZ = new Tone.Sequence(motionLoopZFunction, gArpegio, "1n").start();
+  motionLoopX = new Tone.Sequence(motionLoopXFunction, aArpegio, "16n").start();
+  motionSynthX.volume.value = -7;
+  motionLoopY = new Tone.Sequence(motionLoopYFunction, cArpegio, "16n").start();
+  motionSynthY.volume.value = -7;
+  motionLoopZ = new Tone.Sequence(motionLoopZFunction, gArpegio, "16n").start();
+  motionSynthZ.volume.value = -7;
 
   // Sets up several loops and a sequence. The loop simply plays the kick every half note (hence the 2n)
   // And the sequence plays a randomly selected measure of snare (selected from humidityLoopSnareNotes1-4)
@@ -211,7 +235,9 @@ function makeFunky() {
   if (makeFunkyVal) {
     makeFunkyVal = false;
     // ensures that the melody is still playing
-    lightLoop.mute = false;
+    if (!isMuted) {
+      lightLoop.mute = false;
+    }
     setlightLoopOctave(2);
   } else {
     makeFunkyVal = true;
@@ -219,10 +245,11 @@ function makeFunky() {
 }
 
 function makeFunkyhumidityLoopKickFunction(time) {
-  if (makeFunkyVal) {
+  console.log(isMuted);
+  if (makeFunkyVal && !isMuted) {
     val = Math.random();
-    val *= 5;
-    val = Math.floor(val) + 1;
+    val *= 4;
+    val = Math.floor(val) + 2;
     if (val == 5) {
       lightLoop.mute = true;
     } else {
@@ -278,6 +305,13 @@ function setHumidityLoopValues(measure) {
   humidityLoopSnare.at(3, measure[3]);
 }
 
+function changeArpegio(loop, newArpegio) {
+  loop.at(0, newArpegio[0]);
+  loop.at(1, newArpegio[1]);
+  loop.at(2, newArpegio[2]);
+  loop.at(3, newArpegio[3]);
+}
+
 volumeSlider.oninput = function() {
   volumeOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
@@ -301,6 +335,43 @@ humidityVolumeSlider.oninput = function() {
   // Can have this change whatever value needs to be tested
   humiditySynthKick.volume.value = this.value;
   humiditySynthSnare.volume.value = this.value - 15;
+};
+
+motionXVolumeSlider.oninput = function() {
+  motionXVolumeOutput.innerHTML = this.value;
+  // X axis
+  if (this.value < 0) {
+    // play positive arpegio
+    changeArpegio(motionLoopX, aArpegioReverse);
+  } else if (this.value > 0) {
+    // play negative arpegio
+    changeArpegio(motionLoopX, aArpegio);
+  }
+};
+
+motionYVolumeSlider.oninput = function() {
+  motionYVolumeOutput.innerHTML = this.value;
+  // y axis
+  if (this.value < 0) {
+    // play positive arpegio
+    changeArpegio(motionLoopY, fArpegioReverse);
+  } else if (this.value > 0) {
+    // play negative arpegio
+    changeArpegio(motionLoopY, fArpegio);
+  }
+};
+
+motionZVolumeSlider.oninput = function() {
+  motionZVolumeOutput.innerHTML = this.value;
+
+  // z axis
+  if (this.value < 0) {
+    // play positive arpegio
+    changeArpegio(motionLoopZ, gArpegioReverse);
+  } else if (this.value > 0) {
+    // play negative arpegio
+    changeArpegio(motionLoopZ, gArpegio);
+  }
 };
 
 // This determines the humidityLoopKick
@@ -398,8 +469,10 @@ function toggleTemp() {
 function toggleLight() {
   if (lightLoop.mute) {
     lightLoop.mute = false;
+    isMuted = false;
   } else {
     lightLoop.mute = true;
+    isMuted = true;
   }
 }
 
@@ -419,28 +492,26 @@ function toggleHumiditySnare() {
   }
 }
 
-// This adds the sound gotten from the motion values
-function motion() {
-  // play a sound dependent on the motion inputs
-
-  // X axis
-  if (x < 0) {
-    // play positive arpegio
+function toggleMotionX() {
+  if (motionLoopX.mute) {
+    motionLoopX.mute = false;
   } else {
-    // play negative arpegio
+    motionLoopX.mute = true;
   }
+}
 
-  // y axis
-  if (y < 0) {
-    // play positive arpegio
+function toggleMotionY() {
+  if (motionLoopY.mute) {
+    motionLoopY.mute = false;
   } else {
-    // play negative arpegio
+    motionLoopY.mute = true;
   }
+}
 
-  // z axis
-  if (z < 0) {
-    // play positive arpegio
+function toggleMotionZ() {
+  if (motionLoopZ.mute) {
+    motionLoopZ.mute = false;
   } else {
-    // play negative arpegio
+    motionLoopZ.mute = true;
   }
 }
