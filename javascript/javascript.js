@@ -11,22 +11,9 @@ var loopLocation = 0;
 // References the Overall Volume value
 var volumeSlider = document.getElementById("volumeSlider");
 var volumeOutput = document.getElementById("volumeValue");
-// References the Temperature Volume value
-var tempVolumeSlider = document.getElementById("tempVolumeSlider");
-var tempVolumeOutput = document.getElementById("tempVolumeValue");
 // References the Light Volume value
-var lightVolumeSlider = document.getElementById("lightVolumeSlider");
-var lightVolumeOutput = document.getElementById("lightVolumeValue");
-// References the Humidity Volume value
-var humidityVolumeSlider = document.getElementById("humidityVolumeSlider");
-var humidityVolumeOutput = document.getElementById("humidityVolumeValue");
-// References the Motion Volume value
-var motionXVolumeSlider = document.getElementById("motionXVolumeSlider");
-var motionXVolumeOutput = document.getElementById("motionXVolumeValue");
-var motionYVolumeSlider = document.getElementById("motionYVolumeSlider");
-var motionYVolumeOutput = document.getElementById("motionYVolumeValue");
-var motionZVolumeSlider = document.getElementById("motionZVolumeSlider");
-var motionZVolumeOutput = document.getElementById("motionZVolumeValue");
+var pingPongDelaySlider = document.getElementById("pingPongDelaySlider");
+var pingPongDelayValueOutput = document.getElementById("pingPongDelayValue");
 
 // Some declarations of variables
 // This is the synth used currently, we'll add more here for each input
@@ -52,10 +39,6 @@ var timeLoop;
 // Synth for the motion
 let motionSynthX;
 var motionLoopX;
-let motionSynthY;
-var motionLoopY;
-let motionSynthZ;
-var motionLoopZ;
 
 // Loop for making things funky
 let makeFunkyLoop;
@@ -64,6 +47,10 @@ var makeFunkyVal = false;
 
 // A boolean variable used to tell us when to run the setup function so it is only run once
 var hasStarted = false;
+
+var bitCrusher = new Tone.BitCrusher(4);
+var pingPongDelay = new Tone.PingPongDelay();
+var tremolo = new Tone.Tremolo(4, 1).toMaster().start();
 
 lightLoopNotes = [
   // A minor chord
@@ -109,14 +96,14 @@ const fChord = ["a3", "c4", "f4"];
 const cChord = ["g3", "c4", "e4"];
 const gChord = ["g3", "b3", "d4"];
 
-const aArpegio = ["a4", "c5", "e5", "a5"];
-const fArpegio = ["f4", "a4", "c5", "f5"];
-const cArpegio = ["c5", "e5", "g5", "c6"];
-const gArpegio = ["g4", "b4", "d5", "g5"];
-const aArpegioReverse = ["a5", "e5", "c5", "a4"];
-const fArpegioReverse = ["f5", "c5", "a4", "f4"];
-const cArpegioReverse = ["c6", "g5", "e5", "c5"];
-const gArpegioReverse = ["g5", "d5", "b4", "g4"];
+const chord1 = ["a4", "c5", "e5", "a5"];
+const chord2 = ["f4", "a4", "c5", "f5"];
+const chord3 = ["c5", "e5", "g5", "c6"];
+const chord4 = ["g4", "b4", "d5", "g5"];
+const chord5 = ["a5", "e5", "c5", "a4"];
+const chord6 = ["f5", "c5", "a4", "f4"];
+const chord7 = ["c6", "g5", "e5", "c5"];
+const chord8 = ["g5", "d5", "b4", "g4"];
 
 const humidityLoopSnareNotes1 = [
   [["c4"], ["c4", "c4"]], // first measure
@@ -150,8 +137,12 @@ var isMuted = false;
 // Setupt
 function setup() {
   // Setup humidity synth
-  humiditySynthKick = new Tone.MembraneSynth().toMaster();
-  humiditySynthSnare = new Tone.NoiseSynth().toMaster();
+  humiditySynthKick = new Tone.MembraneSynth().chain(
+    pingPongDelay,
+    bitCrusher,
+    Tone.Master
+  );
+  humiditySynthSnare = new Tone.NoiseSynth().chain(bitCrusher, Tone.Master);
   humiditySynthSnare.volume.value = -15;
 
   // Sets up light synthesizer
@@ -161,17 +152,20 @@ function setup() {
       partials: [1, 2, 5]
     },
     portamento: 0.005
-  }).toMaster();
+  }).chain(pingPongDelay, bitCrusher, Tone.Master);
 
   // Sets up motion synthesizers
-  motionSynthX = new Tone.Synth().toMaster();
-  motionSynthY = new Tone.Synth().toMaster();
-  motionSynthZ = new Tone.Synth().toMaster();
+  motionSynthX = new Tone.Synth().chain(
+    pingPongDelay,
+    bitCrusher,
+    tremolo,
+    Tone.Master
+  );
+  motionSynthX.volume.value = -7;
 
   // Sets up temp synth
-  tempSynth = new Tone.PolySynth(6);
+  tempSynth = new Tone.PolySynth(6).chain(pingPongDelay, tremolo, Tone.Master);
   tempSynth.volume.value = -10;
-  tempSynth.toMaster();
 
   // Sets up a sequence for the light sound, as it plays a series of notes
   lightLoop = new Tone.Sequence(
@@ -180,24 +174,24 @@ function setup() {
     "8n"
   ).start();
 
-  motionLoopX = new Tone.Sequence(motionLoopXFunction, aArpegio, "16n").start();
-  motionSynthX.volume.value = -7;
-  motionLoopY = new Tone.Sequence(motionLoopYFunction, cArpegio, "16n").start();
-  motionSynthY.volume.value = -7;
-  motionLoopZ = new Tone.Sequence(motionLoopZFunction, gArpegio, "16n").start();
-  motionSynthZ.volume.value = -7;
+  toggleLight();
+
+  motionLoopX = new Tone.Sequence(motionLoopXFunction, chord1, "16n").start();
+  toggleMotionX();
 
   // Sets up several loops and a sequence. The loop simply plays the kick every half note (hence the 2n)
   // And the sequence plays a randomly selected measure of snare (selected from humidityLoopSnareNotes1-4)
   humidityLoopKick = new Tone.Loop(humidityLoopKickFunction, "2n").start();
+  toggleHumidityKick();
   humidityLoopSnare = new Tone.Sequence(
     humidityLoopSnareFunction,
     humidityLoopSnareNotes,
     "4n"
   ).start();
-
+  toggleHumiditySnare();
   // Sets up a loop for playing the the tempSynth (polySynth simply playing 4 chords);
   tempLoop = new Tone.Loop(tempLoopFunction, "1n").start();
+  toggleTemp();
 
   // A loop that randomizes the values played by the lightLoop
   makeFunkyLoop = new Tone.Loop(
@@ -214,7 +208,7 @@ function setup() {
 }
 
 function makeFunky() {
-  if (makeFunkyVal) {
+  if (!isMuted && makeFunkyVal) {
     makeFunkyVal = false;
     // ensures that the melody is still playing
     if (!isMuted) {
@@ -227,7 +221,7 @@ function makeFunky() {
 }
 
 function makeFunkyhumidityLoopKickFunction(time) {
-  if (makeFunkyVal && !isMuted) {
+  if (!isMuted && makeFunkyVal) {
     val = Math.random();
     val *= 4;
     val = Math.floor(val) + 2;
@@ -299,59 +293,18 @@ volumeSlider.oninput = function() {
   Tone.Master.volume.value = this.value;
 };
 
-tempVolumeSlider.oninput = function() {
-  tempVolumeOutput.innerHTML = this.value;
+pingPongDelaySlider.oninput = function() {
+  console.log("test");
+  pingPongDelayValueOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
-  tempSynth.volume.value = this.value - 10;
-};
+  bitCrusher.wet.value = this.value / 2;
+  pingPongDelay.wet.value = this.value;
 
-lightVolumeSlider.oninput = function() {
-  lightVolumeOutput.innerHTML = this.value;
-  // Can have this change whatever value needs to be tested
-  lightSynth.volume.value = this.value;
-};
-
-humidityVolumeSlider.oninput = function() {
-  humidityVolumeOutput.innerHTML = this.value;
-  // Can have this change whatever value needs to be tested
-  humiditySynthKick.volume.value = this.value;
-  humiditySynthSnare.volume.value = this.value - 15;
-};
-
-motionXVolumeSlider.oninput = function() {
-  motionXVolumeOutput.innerHTML = this.value;
-  // X axis
-  if (this.value < 0) {
-    // play positive arpegio
-    changeArpegio(motionLoopX, aArpegioReverse);
-  } else if (this.value > 0) {
-    // play negative arpegio
-    changeArpegio(motionLoopX, aArpegio);
-  }
-};
-
-motionYVolumeSlider.oninput = function() {
-  motionYVolumeOutput.innerHTML = this.value;
-  // y axis
-  if (this.value < 0) {
-    // play positive arpegio
-    changeArpegio(motionLoopY, fArpegioReverse);
-  } else if (this.value > 0) {
-    // play negative arpegio
-    changeArpegio(motionLoopY, fArpegio);
-  }
-};
-
-motionZVolumeSlider.oninput = function() {
-  motionZVolumeOutput.innerHTML = this.value;
-
-  // z axis
-  if (this.value < 0) {
-    // play positive arpegio
-    changeArpegio(motionLoopZ, gArpegioReverse);
-  } else if (this.value > 0) {
-    // play negative arpegio
-    changeArpegio(motionLoopZ, gArpegio);
+  tremolo.frequency.value = this.value * 20;
+  if (this.value * 20 > 1) {
+    tremolo.wet.value = 1;
+  } else {
+    tremolo.wet.value = 0;
   }
 };
 
@@ -359,6 +312,20 @@ motionZVolumeSlider.oninput = function() {
 function humidityLoopKickFunction(time) {
   setRandomHumidityLoopSnarePattern();
   humiditySynthKick.triggerAttackRelease("c1", "8n", time);
+}
+
+function setRandomChordPattern() {
+  val = Math.random();
+  val *= 8;
+  val = Math.floor(val);
+  setChordPattern(chord + (val + 1));
+}
+
+function setChordPattern(chord) {
+  motionLoopX.at(0, chord[0]);
+  motionLoopX.at(1, chord[1]);
+  motionLoopX.at(2, chord[2]);
+  motionLoopX.at(3, chord[3]);
 }
 
 function tempLoopFunction(time) {
@@ -379,15 +346,15 @@ function lightLoopFunction(time, note) {
 }
 
 function motionLoopXFunction(time, note) {
-  motionSynthX.triggerAttackRelease(note, "10hz", time);
+  motionSynthX.triggerAttackRelease(note, "5hz", time);
 }
 
 function motionLoopYFunction(time, note) {
-  motionSynthY.triggerAttackRelease(note, "10hz", time);
+  motionSynthY.triggerAttackRelease(note, "5hz", time);
 }
 
 function motionLoopZFunction(time, note) {
-  motionSynthZ.triggerAttackRelease(note, "10hz", time);
+  motionSynthZ.triggerAttackRelease(note, "5hz", time);
 }
 
 function timeLoopFunction(time) {
@@ -439,59 +406,51 @@ function mute() {
 }
 
 function toggleTemp() {
-  if (tempLoop.mute) {
-    tempLoop.mute = false;
-  } else {
-    tempLoop.mute = true;
-  }
+  tempLoop.mute = !document.getElementById("muteTemp").checked;
 }
 
 function toggleLight() {
-  if (lightLoop.mute) {
-    lightLoop.mute = false;
-    isMuted = false;
-  } else {
-    lightLoop.mute = true;
-    isMuted = true;
-  }
+  lightLoop.mute = !document.getElementById("muteLight").checked;
+  isMuted = !document.getElementById("muteLight").checked;
 }
 
 function toggleHumidityKick() {
-  if (humidityLoopKick.mute) {
-    humidityLoopKick.mute = false;
-  } else {
-    humidityLoopKick.mute = true;
-  }
+  humidityLoopKick.mute = !document.getElementById("muteHumidityKick").checked;
 }
 
 function toggleHumiditySnare() {
-  if (humidityLoopSnare.mute) {
-    humidityLoopSnare.mute = false;
-  } else {
-    humidityLoopSnare.mute = true;
-  }
+  humidityLoopSnare.mute = !document.getElementById("muteHumiditySnare")
+    .checked;
 }
 
 function toggleMotionX() {
-  if (motionLoopX.mute) {
-    motionLoopX.mute = false;
-  } else {
-    motionLoopX.mute = true;
-  }
+  motionLoopX.mute = !document.getElementById("muteMotionX").checked;
 }
 
 function toggleMotionY() {
-  if (motionLoopY.mute) {
-    motionLoopY.mute = false;
-  } else {
-    motionLoopY.mute = true;
-  }
+  motionLoopY.mute = !document.getElementById("muteMotionY").checked;
 }
 
 function toggleMotionZ() {
-  if (motionLoopZ.mute) {
-    motionLoopZ.mute = false;
+  motionLoopZ.mute = !document.getElementById("muteMotionZ").checked;
+}
+
+function changeHumidity(value) {}
+
+// Value is some value between 0 - 1
+function changeTemperature(value) {
+  console.log(value);
+  bitCrusher.wet.value = this.value / 2;
+  pingPongDelay.wet.value = this.value;
+
+  tremolo.frequency.value = this.value * 20;
+  if (this.value * 20 > 1) {
+    tremolo.wet.value = 1;
   } else {
-    motionLoopZ.mute = true;
+    tremolo.wet.value = 0;
   }
 }
+
+function changeLight() {}
+
+function changeMotion() {}

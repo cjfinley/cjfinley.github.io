@@ -39,166 +39,65 @@
     <br />
     <br/ >
     <div>
-      <div>
-        <div class="slidecontainer">
-          <label class="container">
-            Toggle Temperature
-            <input
-              type="checkbox"
-              checked="checked"
-              id="muteTemp"
-              onclick="toggleTemp()"
-            />
-            <span class="checkmark"></span>
-          </label>
-          Temperature Volume:
-          <span id="tempVolumeValue"></span>
-          <input
-            type="range"
-            min="-20"
-            max="20"
-            value="0"
-            class="slider"
-            name="tempVolumeSlider"
-            id="tempVolumeSlider"
-          />
-        </div>
-      </div>
+      <label class="container">
+        Toggle Temperature
+        <input type="checkbox" id="muteTemp" onclick="toggleTemp()" />
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="container">
+        Toggle Light
+        <input
+          type="checkbox"
+          checked="checked"
+          id="muteLight"
+          onclick="toggleLight()"
+        />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container">
+        Toggle Humidity Kick
+        <input
+          type="checkbox"
+          id="muteHumidityKick"
+          onclick="toggleHumidityKick()"
+        />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container">
+        Toggle Humidity Snare
+        <input
+          type="checkbox"
+          id="muteHumiditySnare"
+          onclick="toggleHumiditySnare()"
+        />
+        <span class="checkmark"></span>
+      </label>
+      <br />
+      <br />
+      <br />
+      <label class="container"
+        >Toggle Motion-X
+        <input type="checkbox" id="muteMotionX" onclick="toggleMotionX()" />
+        <span class="checkmark"></span>
+      </label>
       <br />
       <br />
       <br />
       <div>
-        <div class="slidecontainer">
-          <label class="container">
-            Toggle Light
-            <input
-              type="checkbox"
-              checked="checked"
-              id="muteLight"
-              onclick="toggleLight()"
-            />
-            <span class="checkmark"></span>
-          </label>
-          Light Volume:
-          <span id="lightVolumeValue"></span>
-          <input
-            type="range"
-            min="-20"
-            max="20"
-            value="0"
-            class="slider"
-            name="lightVolumeSlider"
-            id="lightVolumeSlider"
-          />
-        </div>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <div class="slidecontainer">
-          <label class="container">
-            Toggle Humidity Kick
-            <input
-              type="checkbox"
-              checked="checked"
-              id="muteHumiditySnare"
-              onclick="toggleHumidityKick()"
-            />
-            <span class="checkmark"></span>
-          </label>
-          <label class="container">
-            Toggle Humidity Snare
-            <input
-              type="checkbox"
-              checked="checked"
-              id="muteHumiditySnare"
-              onclick="toggleHumiditySnare()"
-            />
-            <span class="checkmark"></span>
-          </label>
-          Humidity Volume:
-          <span id="humidityVolumeValue"></span>
-          <input
-            type="range"
-            min="-20"
-            max="20"
-            value="0"
-            class="slider"
-            name="humidityVolumeSlider"
-            id="humidityVolumeSlider"
-          />
-        </div>
-      </div>
-      <br />
-      <br />
-      <br />
-      <div>
-        <label class="container"
-          >Toggle Motion-X
-          <input
-            type="checkbox"
-            checked="checked"
-            id="muteMotionX"
-            onclick="toggleMotionX()"
-          />
-          <span class="checkmark"></span>
-        </label>
-        Motion-X Volume
-        <span id="motionXVolumeValue"></span>
+        <br />
+        Temperature Change:
+        <span id="pingPongDelayValue"></span>
         <input
           type="range"
-          min="-1"
+          min="0"
           max="1"
-          value="0"
+          step="0.1"
+          value="0.1"
           class="slider"
-          name="motionXVolumeSlider"
-          id="motionXVolumeSlider"
+          id="pingPongDelaySlider"
         />
         <br />
-        <label class="container"
-          >Toggle Motion-Y
-          <input
-            type="checkbox"
-            checked="checked"
-            id="muteMotionY"
-            onclick="toggleMotionY()"
-          />
-          <span class="checkmark"></span>
-        </label>
-        Motion-Y Volume
-        <span id="motionYVolumeValue"></span>
-        <input
-          type="range"
-          min="-1"
-          max="1"
-          value="0"
-          class="slider"
-          name="motionYVolumeSlider"
-          id="motionYVolumeSlider"
-        />
-        <br />
-        <label class="container"
-          >Toggle Motion-Z
-          <input
-            type="checkbox"
-            checked="checked"
-            id="muteMotionZ"
-            onclick="toggleMotionZ()"
-          />
-          <span class="checkmark"></span>
-        </label>
-        Motion-Z Volume
-        <span id="motionZVolumeValue"></span>
-        <input
-          type="range"
-          min="-1"
-          max="1"
-          value="0"
-          class="slider"
-          name="motionZVolumeSlider"
-          id="motionZVolumeSlider"
-        />
       </div>
     </div>
   </body>
