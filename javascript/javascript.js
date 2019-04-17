@@ -96,14 +96,23 @@ const fChord = ["a3", "c4", "f4"];
 const cChord = ["g3", "c4", "e4"];
 const gChord = ["g3", "b3", "d4"];
 
-const chord1 = ["a4", "c5", "e5", "a5"];
-const chord2 = ["f4", "a4", "c5", "f5"];
-const chord3 = ["c5", "e5", "g5", "c6"];
-const chord4 = ["g4", "b4", "d5", "g5"];
-const chord5 = ["a5", "e5", "c5", "a4"];
-const chord6 = ["f5", "c5", "a4", "f4"];
-const chord7 = ["c6", "g5", "e5", "c5"];
-const chord8 = ["g5", "d5", "b4", "g4"];
+const chord1 = ["a4", "c5", "e5"];
+const validNotes = [
+  "a4",
+  "b4",
+  "c4",
+  "d4",
+  "e4",
+  "f4",
+  "g4",
+  "a5",
+  "b5",
+  "c5",
+  "d5",
+  "e5",
+  "f5",
+  "g5"
+];
 
 const humidityLoopSnareNotes1 = [
   [["c4"], ["c4", "c4"]], // first measure
@@ -161,7 +170,7 @@ function setup() {
     tremolo,
     Tone.Master
   );
-  motionSynthX.volume.value = -7;
+  motionSynthX.volume.value = -20;
 
   // Sets up temp synth
   tempSynth = new Tone.PolySynth(6).chain(pingPongDelay, tremolo, Tone.Master);
@@ -280,13 +289,6 @@ function setHumidityLoopValues(measure) {
   humidityLoopSnare.at(3, measure[3]);
 }
 
-function changeArpegio(loop, newArpegio) {
-  loop.at(0, newArpegio[0]);
-  loop.at(1, newArpegio[1]);
-  loop.at(2, newArpegio[2]);
-  loop.at(3, newArpegio[3]);
-}
-
 volumeSlider.oninput = function() {
   volumeOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
@@ -321,13 +323,6 @@ function setRandomChordPattern() {
   setChordPattern(chord + (val + 1));
 }
 
-function setChordPattern(chord) {
-  motionLoopX.at(0, chord[0]);
-  motionLoopX.at(1, chord[1]);
-  motionLoopX.at(2, chord[2]);
-  motionLoopX.at(3, chord[3]);
-}
-
 function tempLoopFunction(time) {
   if (loopLocation == 0) {
     tempSynth.triggerAttackRelease(aChord, "2n", time);
@@ -347,14 +342,6 @@ function lightLoopFunction(time, note) {
 
 function motionLoopXFunction(time, note) {
   motionSynthX.triggerAttackRelease(note, "5hz", time);
-}
-
-function motionLoopYFunction(time, note) {
-  motionSynthY.triggerAttackRelease(note, "5hz", time);
-}
-
-function motionLoopZFunction(time, note) {
-  motionSynthZ.triggerAttackRelease(note, "5hz", time);
 }
 
 function timeLoopFunction(time) {
@@ -427,30 +414,75 @@ function toggleMotionX() {
   motionLoopX.mute = !document.getElementById("muteMotionX").checked;
 }
 
-function toggleMotionY() {
-  motionLoopY.mute = !document.getElementById("muteMotionY").checked;
+function changeHumidity(humidity) {
+  v = roundValue(humidity);
+  humiditySynthSnare.volume.value = v * 20 - 10;
+  humiditySynthKickKick.volume.value = v * 20 - 10;
 }
-
-function toggleMotionZ() {
-  motionLoopZ.mute = !document.getElementById("muteMotionZ").checked;
-}
-
-function changeHumidity(value) {}
 
 // Value is some value between 0 - 1
 function changeTemperature(value) {
-  console.log(value);
-  bitCrusher.wet.value = this.value / 2;
-  pingPongDelay.wet.value = this.value;
+  v = roundValue(value);
+  console.log(v);
+  bitCrusher.wet.value = v / 2;
+  pingPongDelay.wet.value = v;
 
-  tremolo.frequency.value = this.value * 20;
-  if (this.value * 20 > 1) {
+  tremolo.frequency.value = v * 20;
+  if (v * 20 > 1) {
     tremolo.wet.value = 1;
   } else {
     tremolo.wet.value = 0;
   }
 }
 
-function changeLight() {}
+function changeLight(light) {
+  v = roundValue(light);
+  lightSynth.volume.value = v * 20 - 10;
+}
 
-function changeMotion() {}
+function changeMotionX(xValue) {
+  v = roundValue(xValue);
+  // set v to a value between 0 - 19
+  v = Math.round(v * 20);
+  motionLoopX.at(0, validNotes[v]);
+}
+
+function changeMotionY(yValue) {
+  v = roundValue(yValue);
+  // set v to a value between 0 - 19
+  v = Math.round(v * 20);
+  motionLoopX.at(1, validNotes[v]);
+}
+function changeMotionZ(zValue) {
+  v = roundValue(yValue);
+  // set v to a value between 0 - 19
+  v = Math.round(v * 20);
+  motionLoopX.at(2, validNotes[v]);
+}
+
+function roundValue(value) {
+  v = value * 100.0;
+  v = Math.round(v) / 100.0;
+  return v;
+}
+
+//Gets called whenever you receive a message for your subscriptions
+client.onMessageArrived = function(message) {
+  console.log(message);
+  payload = JSON.parse(message.payloadString); // {temp: 0.76}
+  temp = payload.Temp;
+  console.log("Temp: " + temp);
+  light = payload.Light;
+  humidity = payload.Humidity;
+  motionX = payload.Motion[0];
+  motionY = payload.Motion[1];
+  motionZ = payload.Motion[2];
+
+  changeTemperature(temp);
+  changeLight(light);
+  changeHumidity(humidity);
+  changeMotionX(xValue);
+  changeMotionY(yValue);
+  changeMotionZ(zValue);
+  // every other function here
+};
