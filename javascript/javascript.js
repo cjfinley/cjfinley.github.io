@@ -14,6 +14,15 @@ var volumeOutput = document.getElementById("volumeValue");
 // References the Light Volume value
 var pingPongDelaySlider = document.getElementById("pingPongDelaySlider");
 var pingPongDelayValueOutput = document.getElementById("pingPongDelayValue");
+// References the Motion x, y, and z sliders
+var motionXSlider = document.getElementById("motionXSlider");
+var motionXValue = document.getElementById("motionXValue");
+
+var motionYSlider = document.getElementById("motionYSlider");
+var motionYValue = document.getElementById("motionYValue");
+
+var motionZSlider = document.getElementById("motionZSlider");
+var motionZValue = document.getElementById("motionZValue");
 
 // Some declarations of variables
 // This is the synth used currently, we'll add more here for each input
@@ -98,20 +107,26 @@ const gChord = ["g3", "b3", "d4"];
 
 const chord1 = ["a4", "c5", "e5"];
 const validNotes = [
-  "a4",
-  "b4",
+  "e3",
+  "f3",
+  "g3",
+  "a3",
+  "b3",
   "c4",
   "d4",
   "e4",
   "f4",
   "g4",
-  "a5",
-  "b5",
+  "a4",
+  "b4",
   "c5",
   "d5",
   "e5",
   "f5",
-  "g5"
+  "g5",
+  "a5",
+  "b5",
+  "c6"
 ];
 
 const humidityLoopSnareNotes1 = [
@@ -296,7 +311,6 @@ volumeSlider.oninput = function() {
 };
 
 pingPongDelaySlider.oninput = function() {
-  console.log("test");
   pingPongDelayValueOutput.innerHTML = this.value;
   // Can have this change whatever value needs to be tested
   bitCrusher.wet.value = this.value / 2;
@@ -308,6 +322,21 @@ pingPongDelaySlider.oninput = function() {
   } else {
     tremolo.wet.value = 0;
   }
+};
+
+motionXSlider.oninput = function() {
+  motionXValue.innerHTML = this.value;
+  changeMotionX(this.value);
+};
+
+motionYSlider.oninput = function() {
+  motionYValue.innerHTML = this.value;
+  changeMotionY(this.value);
+};
+
+motionZSlider.oninput = function() {
+  motionZValue.innerHTML = this.value;
+  changeMotionZ(this.value);
 };
 
 // This determines the humidityLoopKick
@@ -423,7 +452,6 @@ function changeHumidity(humidity) {
 // Value is some value between 0 - 1
 function changeTemperature(value) {
   v = roundValue(value);
-  console.log(v);
   bitCrusher.wet.value = v / 2;
   pingPongDelay.wet.value = v;
 
@@ -443,20 +471,20 @@ function changeLight(light) {
 function changeMotionX(xValue) {
   v = roundValue(xValue);
   // set v to a value between 0 - 19
-  v = Math.round(v * 20);
+  v = Math.round(v * 10 + 9);
   motionLoopX.at(0, validNotes[v]);
 }
 
 function changeMotionY(yValue) {
   v = roundValue(yValue);
   // set v to a value between 0 - 19
-  v = Math.round(v * 20);
+  v = Math.round(v * 10 + 9);
   motionLoopX.at(1, validNotes[v]);
 }
 function changeMotionZ(zValue) {
-  v = roundValue(yValue);
+  v = roundValue(zValue);
   // set v to a value between 0 - 19
-  v = Math.round(v * 20);
+  v = Math.round(v * 10 + 9);
   motionLoopX.at(2, validNotes[v]);
 }
 
@@ -470,17 +498,16 @@ function roundValue(value) {
 client.onMessageArrived = function(message) {
   console.log(message);
   payload = JSON.parse(message.payloadString); // {temp: 0.76}
-  temp = payload.Temp;
-  console.log("Temp: " + temp);
-  light = payload.Light;
-  humidity = payload.Humidity;
-  motionX = payload.Motion[0];
-  motionY = payload.Motion[1];
-  motionZ = payload.Motion[2];
+  temp = roundValue(parseFloat(payload.Temp));
+  light = roundValue(parseFloat(payload.Light));
+  humidity = roundValue(parseFloat(payload.Humidity));
+  motionX = roundValue(parseFloat(payload.Motion[0]));
+  motionY = roundValue(parseFloat(payload.Motion[1]));
+  motionZ = roundValue(parseFloat(payload.Motion[2]));
 
   changeTemperature(temp);
-  changeLight(light);
-  changeHumidity(humidity);
+  //changeLight(light);
+  //changeHumidity(humidity);
   changeMotionX(xValue);
   changeMotionY(yValue);
   changeMotionZ(zValue);
