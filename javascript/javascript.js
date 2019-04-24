@@ -163,7 +163,7 @@ function setup() {
   // initializes everything with the loweset possible value
   changeLight(0);
   changeTemp(0);
-  changeHumidity(0.5);
+  changeHumidity(0);
   changeaccelerationX(0);
   changeaccelerationY(0);
   changeaccelerationZ(0);
