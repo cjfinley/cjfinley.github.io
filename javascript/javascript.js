@@ -382,11 +382,18 @@ function setRandomSnarePattern() {
 
 // Changes the volume of the kick
 function changeHumidity(humidity) {
-  v = roundValue(humidity);
-  v *= 80;
-  v -= 40;
-  kickSynth.volume.value = Math.round(v);
-  snareSynth.volume.value = Math.round(v);
+  if (humidity == 0) {
+    kickSequence.mute = true;
+    snareSequence.mute = true;
+  } else {
+    kickSequence.mute = false;
+    snareSequence.mute = false;
+    v = roundValue(humidity);
+    v *= 80;
+    v -= 40;
+    kickSynth.volume.value = Math.round(v);
+    snareSynth.volume.value = Math.round(v);
+  }
 }
 
 // Change frequency of the tempSynth
