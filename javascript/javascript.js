@@ -59,15 +59,15 @@ var pattern2 = [[null, ["c1", "c1"], "c1", "c1"]];
 var pattern3 = [["c1", "c1", "c1", "c1"]];
 var pattern4 = [[["c4", "c4"], ["c4", "c1"]]];
 var pattern5 = [[["c4", "c4"], ["c4", "c1"], ["c4"], ["c1"]]];
-var pattern6 = [null];
+var pattern6 = [[[null, "c1"], "c1", null, "c1"]];
 
 var snarePattern = pattern2;
 
-var kickPattern1 = ["c1"];
+var kickPattern1 = ["c1", "c1", "c1", "c1"];
 var kickPattern2 = [["c1", "c1"]];
 var kickPattern3 = [["c1", [["c1", "c1"], null]]];
 
-var kickPattern = kickPattern3;
+var kickPatterns = [kickPattern2, kickPattern2, kickPattern2];
 
 var patterns = [pattern1, pattern2, pattern3, pattern4, pattern5, pattern6];
 
@@ -132,7 +132,11 @@ function setup() {
   // Synth for the kick drum, changed by humidity
   kickSynth = new Tone.MembraneSynth().toMaster();
   kickSynth.volume.value = kickVolumeScale;
-  kickSequence = new Tone.Sequence(kickLoopFunction, kickPattern, "1n").start();
+  kickSequence = new Tone.Sequence(
+    kickLoopFunction,
+    kickPattern1,
+    "1n"
+  ).start();
   // Synth for the snare drum, changed by humidity
   snareSynth = new Tone.NoiseSynth().toMaster();
   snareSynth.volume.value = snareVolumeScale;
@@ -156,9 +160,10 @@ function setup() {
   toggleMotionY();
   toggleMotionZ();
 
+  // initializes everything with the loweset possible value
   changeLight(0);
   changeTemp(0);
-  changeHumidity(0);
+  changeHumidity(0.5);
   changeaccelerationX(0);
   changeaccelerationY(0);
   changeaccelerationZ(0);
@@ -168,6 +173,7 @@ function setup() {
 
   Tone.Master.volume.value = volumeScale;
   Tone.Master.chain(tempEffect, lightEffect);
+  Tone.Transport.bpm.value = 140;
   // connect to IBM cloud
   client.connect(options);
 }
@@ -358,8 +364,7 @@ function toggleMotionZ() {
 
 // This determines the kickSequence
 function kickLoopFunction(time, note) {
-  //setRandomKickPattern();
-  //setRandomSnarePattern();
+  setRandomSnarePattern();
   kickSynth.triggerAttackRelease("c1", "8n", time);
 }
 
@@ -368,8 +373,8 @@ function snareLoopFunction(time, note) {
 }
 
 function setRandomKickPattern() {
-  v = randomInt(0, 6);
-  kickSequence.at(0, patterns[v]);
+  v = randomInt(0, 3);
+  kickSequence.at(0, kickPatterns[v]);
 }
 
 function setRandomSnarePattern() {
