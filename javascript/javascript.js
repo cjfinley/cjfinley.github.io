@@ -128,6 +128,11 @@ var accelerationZMuted = false;
 // ======================================================================================================
 // Set up function
 function setup() {
+  console.log("Hello, Welcome to IoT Auralizer");
+  console.log();
+  console.log(
+    "This device accepts a series of inputs, such as light, acceleration, and humidity, and converts it to sound"
+  );
   initSynths();
   // Synth for the kick drum, changed by humidity
   kickSynth = new Tone.MembraneSynth().toMaster();
@@ -372,11 +377,6 @@ function snareLoopFunction(time, note) {
   snareSynth.triggerAttackRelease("8n", time);
 }
 
-function setRandomKickPattern() {
-  v = randomInt(0, 3);
-  kickSequence.at(0, kickPatterns[v]);
-}
-
 function setRandomSnarePattern() {
   v = randomInt(0, 6);
   snareSequence.at(0, patterns[v]);
@@ -387,17 +387,19 @@ function setRandomSnarePattern() {
 
 // Changes the volume of the kick
 function changeHumidity(humidity) {
-  if (humidity == 0) {
-    kickSequence.mute = true;
-    snareSequence.mute = true;
-  } else {
-    kickSequence.mute = false;
-    snareSequence.mute = false;
-    v = roundValue(humidity);
-    v *= 80;
-    v -= 40;
-    kickSynth.volume.value = Math.round(v);
-    snareSynth.volume.value = Math.round(v);
+  if (humidityCheck.checked) {
+    if (humidity == 0) {
+      kickSequence.mute = true;
+      snareSequence.mute = true;
+    } else {
+      kickSequence.mute = false;
+      snareSequence.mute = false;
+      v = roundValue(humidity);
+      v *= 80;
+      v -= 40;
+      kickSynth.volume.value = Math.round(v);
+      snareSynth.volume.value = Math.round(v);
+    }
   }
 }
 
@@ -496,9 +498,12 @@ client.onMessageArrived = function(message) {
   temp = roundValue(parseFloat(payload.Temp));
   light = roundValue(parseFloat(payload.Light));
   humidity = roundValue(parseFloat(payload.Humidity));
-  accelerationX = roundValue(parseFloat(payload.acceleration[0]));
-  accelerationY = roundValue(parseFloat(payload.acceleration[1]));
-  accelerationZ = roundValue(parseFloat(payload.acceleration[2]));
+  accelerationX = roundValue(parseFloat(payload.Motion[0]));
+  accelerationY = roundValue(parseFloat(payload.Motion[1]));
+  accelerationZ = roundValue(parseFloat(payload.Motion[2]));
+  gyroX = roundValue(parseFloat(payload.Gyro[0]));
+  gyroY = roundValue(parseFloat(payload.Gyro[1]));
+  gyroZ = roundValue(parseFloat(payload.Gyro[2]));
 
   changeTemp(temp);
   changeLight(light);
@@ -506,5 +511,8 @@ client.onMessageArrived = function(message) {
   changeaccelerationX(accelerationX);
   changeaccelerationY(accelerationY);
   changeaccelerationZ(accelerationZ);
+  changeMotionX(gyroX);
+  changeMotionY(gyroY);
+  changeMotionZ(gyroZ);
   // every other function here
 };
