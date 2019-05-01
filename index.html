@@ -1,9 +1,221 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CSC 453 - IoT Music Aurilization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/13.8.6/Tone.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.js"
+      type="text/javascript"
+    ></script>
+    <link rel="stylesheet" href="styles/styles.css" />
+    <script async src="./javascript/connection.js"></script>
+    <script async src="./javascript/javascript.js"></script>
+    <title>IoT Auralizer</title>
   </head>
+
   <body>
-    <href link="">Github documents</href>
+    <h1>IoT Auralizer</h1>
+    <div>
+      <button class="button button0" onclick="pause()">Pause</button>
+      <button class="button button1" onclick="play()">Play</button>
+      <button class="button button2" onclick="mute()">Mute</button>
+    </div>
+    <br />
+    <br />
+    <div class="slidecontainer">
+      Volume:
+      <span id="volumeValue"></span>
+      <input
+        type="range"
+        min="-20"
+        max="20"
+        value="0"
+        class="slider"
+        name="volumeSlider"
+        id="volumeSlider"
+      />
+    </div>
+    <br />
+    <br />
+    <hr size="10" width="90%" align="center" color="black" />
+    <br />
+    <div>
+      <label class="container">
+        Toggle Temperature
+        <input type="checkbox" id="muteTemp" onclick="toggleTemp()" />
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="container">
+        Toggle Light
+        <input type="checkbox" id="muteLight" onclick="toggleLight()" />
+        <span class="checkmark"></span>
+      </label>
+
+      <label class="container">
+        Toggle Humidity
+        <input type="checkbox" id="muteHumidity" />
+        <span class="checkmark"></span>
+      </label>
+      <br />
+      <br <hr size="10" width="90%" align="center" color="black" />
+      <br />
+      <label class="container"
+        >Toggle Acceleration-X
+        <input type="checkbox" id="muteaccelerationX" />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container"
+        >Toggle Acceleration-Y
+        <input type="checkbox" id="muteaccelerationY" />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container"
+        >Toggle Acceleration-Z
+        <input type="checkbox" id="muteaccelerationZ" />
+        <span class="checkmark"></span>
+      </label>
+      <br />
+      <br />
+      <br />
+      <!-- <label class="container"
+        >Toggle Motion-X
+        <input type="checkbox" id="motionXCheck" />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container"
+        >Toggle Motion-Y
+        <input type="checkbox" id="motionYCheck" />
+        <span class="checkmark"></span>
+      </label>
+      <label class="container"
+        >Toggle Motion-Z
+        <input type="checkbox" id="motionZCheck" />
+        <span class="checkmark"></span>
+      </label> -->
+      <br />
+      <br />
+      <hr size="10" width="90%" align="center" color="black" />
+      <br />
+      <div if="false">
+        Humidity Value:
+        <span id="humidityValue"></span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0"
+          class="slider"
+          id="humiditySlider"
+        />
+        <br />
+        <br />
+        Light Value:
+        <span id="lightValue"></span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0"
+          class="slider"
+          id="lightSlider"
+        />
+        <br />
+        <br />
+        Temperature Value:
+        <span id="tempValue"></span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.01"
+          value="0"
+          class="slider"
+          id="tempSlider"
+        />
+        <br />
+        <br />
+        <div>
+          Acceleration X:
+          <span id="accelerationXValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="accelerationXSlider"
+          />
+          <br />
+          <br />
+          Acceleration Y:
+          <span id="accelerationYValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="accelerationYSlider"
+          />
+          <br />
+          <br />
+          Acceleration Z:
+          <span id="accelerationZValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="accelerationZSlider"
+          />
+          <br />
+          <br />
+          <!-- Motion X:
+          <span id="motionXValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="motionXSlider"
+          />
+          <br />
+          <br />
+          Motion Y:
+          <span id="motionYValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="motionYSlider"
+          />
+          <br />
+          <br />
+          Motion Z:
+          <span id="motionZValue"></span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="0"
+            class="slider"
+            id="motionZSlider"
+          /> -->
+          <br />
+        </div>
+      </div>
+    </div>
   </body>
 </html>
